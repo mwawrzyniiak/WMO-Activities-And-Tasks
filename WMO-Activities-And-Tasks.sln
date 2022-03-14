@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMO-Activities-And-Tasks", "WMO-Activities-And-Tasks\WMO-Activities-And-Tasks.csproj", "{4CA2ED9E-806D-4711-99E6-22E9FDCD016E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4CA2ED9E-806D-4711-99E6-22E9FDCD016E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CA2ED9E-806D-4711-99E6-22E9FDCD016E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CA2ED9E-806D-4711-99E6-22E9FDCD016E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CA2ED9E-806D-4711-99E6-22E9FDCD016E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ED298510-B3DA-41FA-B9C2-E49E49A55B47}
+	EndGlobalSection
+EndGlobal
