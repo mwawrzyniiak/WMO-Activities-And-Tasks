@@ -12,7 +12,7 @@ What things you need to install the software and how to install them:
 ## Authors
 
 * **Maciej Wawrzyniak** - [Maciej Wawrzyniak](https://github.com/mwawrzyniiak)
-* **Hubert Iwanek** - [Hubert Iwanek](https://github.com/exple96)
+* **Hubert Iwanek** - [Hubert Iwanek](https://github.com/exple96)  
 //TODO:
 
 ## Referencies
