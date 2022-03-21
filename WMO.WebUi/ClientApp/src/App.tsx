@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { Button, Col, Container, Dropdown, Form, Row } from 'react-bootstrap';
+import { Button, Col, Container, Dropdown, Form, Row, Spinner } from 'react-bootstrap';
 import './App.css';
 
 interface FormState {
@@ -10,7 +10,9 @@ interface FormState {
 
 function App() {
 
+
   const [state, setState] = useState<FormState>({ disciplines: 0, projectSize: 1 });
+  const [isSending, setIsSending] = useState(false);
 
   function handleDyscyplineChange(event: any) {
     const target = event.target;
@@ -41,7 +43,9 @@ function App() {
 
   function handleSubmit(event: any) {
     event.preventDefault();
+    setIsSending(true)
     axios.post("http://localhost:4000/api/v1/schedule", state)
+      .then(() => setIsSending(false))
   }
 
   return (
@@ -82,11 +86,6 @@ function App() {
                 onChange={handleDyscyplineChange}
               />
               <Form.Check
-                label={`Analysis And Design`}
-                value={64}
-                onChange={handleDyscyplineChange}
-              />
-              <Form.Check
                 label={`Configuration And Change Management`}
                 value={128}
                 onChange={handleDyscyplineChange}
@@ -108,7 +107,18 @@ function App() {
                 <option value="3">Mars</option>
                 <option value="4">Jowisz</option>
               </Form.Select>
-              <Button type="submit">Zatwierdź</Button>
+              <Button type="submit" disabled={isSending}>
+                {isSending ?
+                  <Spinner
+                    className='mr-3'
+                    as="span"
+                    animation="grow"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                  : ""}
+                Zatwierdź</Button>
             </Form>
           </Col>
         </Row>
