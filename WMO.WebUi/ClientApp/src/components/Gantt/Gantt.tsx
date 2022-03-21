@@ -1,11 +1,21 @@
+import axios from "axios";
+import { useState } from "react";
 import Xarrow from "react-xarrows";
-import ExampleData from "./ExampleData";
 import { Task } from "./Task";
 
 const baseTaskWidth = 80
 
 export default function Gantt() {
-    let itemsRaw = ExampleData();
+    return <h1>gantt</h1>
+    //let itemsRaw: Task[] = ExampleData();
+    let tmp: Task[] = []
+    const [itemsRaw, setItemsRaw] = useState(tmp);
+
+    axios.get(`http://localhost:4000/api/v1/schedule`)
+        .then(res => {
+            setItemsRaw(res.data)
+        })
+
     let starters = itemsRaw.filter(x => x.Predecessors.length == 0)
     let itemsDict: { [id: number]: Task; } = {};
     var offsets: { [id: number]: number; } = {};
