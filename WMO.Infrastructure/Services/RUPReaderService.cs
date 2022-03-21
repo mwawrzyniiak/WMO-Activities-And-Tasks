@@ -1,5 +1,6 @@
 ﻿using WMO.Infrastructure.Interfaces;
 using WMO.Infrastructure.Models;
+using System;
 
 namespace WMO.Infrastructure.Services
 {
@@ -21,8 +22,9 @@ namespace WMO.Infrastructure.Services
 
                 if (!isFirst)
                 {
-                    if (values?.Length > 0)
-                        list.Add(new RUP(values));
+                    if(values is not null)
+                        if (values?.Length > 0 && values[6] != "-" && values[6] != "˙" && !String.IsNullOrEmpty(values[6]))
+                          list.Add(new RUP(values));
                 }
                 isFirst = false;
             }
