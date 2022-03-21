@@ -6,7 +6,7 @@
         public string BreakdownElement { get; set; }
         public int Index { get; set; }
         public string RawPredecessors { get; set; }
-        public List<RUP> Predecessors { get; set; }
+        public List<int> Predecessors { get; set; }
         public TypeEnum Type { get; set; }
         public string Przydział { get; set; }
         public string Dyscyplina { get; set; }
@@ -36,14 +36,25 @@
             this.ZakresWdrażania = args[7];
 
             //TODO Kategorie
-            var categoriesName = args[8].Split(",").Select(x => x.Trim()).Select(x => x == "G" ? 1 : x == "P" ? 2 : x == "M" ? 4 : 8).Select(x => (CategoryEnum)(x));
+            var categoriesName = args[12].Split(",").Select(x => x.Trim()).Select(x => x == "G" ? 1 : x == "P" ? 2 : x == "M" ? 4 : 8).Select(x => (CategoryEnum)(x));
 
             foreach (var category in categoriesName)
             {
                 Kategorie |= category;
             }
 
-            this.Uzasadnienie = args[9];
+            this.Uzasadnienie = args[13];
+
+            if (RawPredecessors != null || RawPredecessors != "")
+            {
+                Predecessors = new List<int>();
+                var predecessorsSplit = RawPredecessors.Split(",");
+                foreach(var predecessor in predecessorsSplit)
+                {
+                    if (predecessor == null || predecessor == "") continue;
+                    Predecessors.Add(int.Parse(predecessor));
+                }
+            }
         }
 
         private int SetType(string[] args)

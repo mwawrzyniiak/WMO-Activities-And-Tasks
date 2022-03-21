@@ -7,6 +7,8 @@
         public int Duration { get; set; }
         public string Role { get; set; }
         public List<int> Predecessors { get; set; }
+
+        public string Description { get; set; }
     }
 }
 

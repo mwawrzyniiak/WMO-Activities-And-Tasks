@@ -17,7 +17,20 @@ namespace WMO.Infrastructure.Services
             List<Models.Task> schedules = new List<Models.Task>();
             schedules.Add(new Models.Task() { Id = 5 });
 
-            RUPReaderService.Read(Dictionary.CSV_PATH);
+            var rups = RUPReaderService.Read(Dictionary.CSV_PATH);
+
+            foreach (var rup in rups)
+            {
+                schedules.Add(new Models.Task()
+                {
+                    Id = rup.Index,
+                    Duration = 1,
+                    Name = rup.BreakdownElement,
+                    Predecessors = rup.Predecessors,
+                    Role = "",
+                    Description = rup.Uzasadnienie
+                });
+            }
             return schedules;
         }
     }
