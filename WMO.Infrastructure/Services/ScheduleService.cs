@@ -12,7 +12,7 @@ namespace WMO.Infrastructure.Services
             this.RUPReaderService = RUPReaderService;
         }
 
-        public List<Models.Task> PrepareSchedule()
+        public List<Models.Task> PrepareSchedule(ProjectParameters projectParameters)
         {
             List<Models.Task> schedules = new List<Models.Task>();
             schedules.Add(new Models.Task() { Id = 5 });

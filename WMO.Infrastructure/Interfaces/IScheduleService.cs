@@ -4,6 +4,6 @@ namespace WMO.Infrastructure.Interfaces
 {
     public interface IScheduleService
     {
-        List<Models.Task> PrepareSchedule();
+        List<Models.Task> PrepareSchedule(ProjectParameters projectParameters);
     }
 }
