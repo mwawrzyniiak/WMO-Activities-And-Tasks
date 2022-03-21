@@ -7,7 +7,7 @@ What things you need to install the software and how to install them:
 
 ## Built With
 * .NET 6.0 - Backend
-* WPF - Frontend
+* React - Frontend
 
 ## Authors
 
