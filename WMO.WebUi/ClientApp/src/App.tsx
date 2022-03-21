@@ -104,8 +104,8 @@ function App() {
               <Form.Select name="projectSize" className='my-4' onChange={handleInputChange}>
                 <option value="1">Ganimedes</option>
                 <option value="2">Pluton</option>
-                <option value="3">Mars</option>
-                <option value="4">Jowisz</option>
+                <option value="4">Mars</option>
+                <option value="8">Jowisz</option>
               </Form.Select>
               <Button type="submit" disabled={isSending}>
                 {isSending ?
