@@ -1,4 +1,6 @@
-﻿namespace WMO.Infrastructure.Models
+﻿using WMO.Infrastructure.Enums;
+
+namespace WMO.Infrastructure.Models
 {
     public class RUP
     {
@@ -9,7 +11,7 @@
         public List<int> Predecessors { get; set; }
         public TypeEnum Type { get; set; }
         public string Przydział { get; set; }
-        public string Dyscyplina { get; set; }
+        public DisciplineEnum Dyscyplina { get; set; }
         public string ZakresWdrażania { get; set; }
         public CategoryEnum Kategorie { get; set; }
         public string Uzasadnienie { get; set; }
@@ -32,7 +34,9 @@
             type = SetType(args);
 
             this.Przydział = args[5];
-            this.Dyscyplina = args[6];
+
+            SetDiscipline(args[6].Trim().ToLower());
+
             this.ZakresWdrażania = args[7];
 
             //TODO Kategorie
@@ -49,11 +53,47 @@
             {
                 Predecessors = new List<int>();
                 var predecessorsSplit = RawPredecessors.Split(",");
-                foreach(var predecessor in predecessorsSplit)
+                foreach (var predecessor in predecessorsSplit)
                 {
                     if (predecessor == null || predecessor == "") continue;
                     Predecessors.Add(int.Parse(predecessor));
                 }
+            }
+        }
+
+        private void SetDiscipline(string disipline)
+        {
+            switch (disipline)
+            {
+                case "business modeling":
+                    this.Dyscyplina = DisciplineEnum.BusinessModeling;
+                    break;
+                case "requirements":
+                    this.Dyscyplina = DisciplineEnum.Requirements;
+                    break;
+                case "analysis and design":
+                    this.Dyscyplina = DisciplineEnum.AnalysisAndDesign;
+                    break;
+                case "implementation":
+                    this.Dyscyplina = DisciplineEnum.Implementation;
+                    break;
+                case "test":
+                    this.Dyscyplina = DisciplineEnum.Test;
+                    break;
+                case "deployment":
+                    this.Dyscyplina = DisciplineEnum.Deployment;
+                    break;
+                case "configuration and change management":
+                    this.Dyscyplina = DisciplineEnum.ConfigurationAndChangeManagement;
+                    break;
+                case "project management":
+                    this.Dyscyplina = DisciplineEnum.ProjectManagement;
+                    break;
+                case "environment":
+                    this.Dyscyplina = DisciplineEnum.Environment;
+                    break;
+                default:
+                    throw new ArgumentException();
             }
         }
 
