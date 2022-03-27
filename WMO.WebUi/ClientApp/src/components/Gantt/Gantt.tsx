@@ -1,38 +1,61 @@
-import axios from "axios";
 import { useState } from "react";
+import ReactTooltip from "react-tooltip";
 import Xarrow from "react-xarrows";
-import { Task } from "./Task";
+import { Task, TaskDto } from "./Task";
 
-const baseTaskWidth = 80
+const baseTaskWidth = 50
 
-export default function Gantt() {
-    return <h1>gantt</h1>
-    //let itemsRaw: Task[] = ExampleData();
-    let tmp: Task[] = []
-    const [itemsRaw, setItemsRaw] = useState(tmp);
+interface GantProps {
+    tasks: TaskDto[]
+}
 
-    axios.get(`http://localhost:4000/api/v1/schedule`)
-        .then(res => {
-            setItemsRaw(res.data)
-        })
+export default function Gantt(props: GantProps) {
+    const [processedTasks, setProcessedTasks] = useState<Array<Task>>([]);
 
-    let starters = itemsRaw.filter(x => x.Predecessors.length == 0)
+    const [chosenTask, setChosenTask] = useState<Task | null>(null)
+
+    if (processedTasks.length == 0) {
+        setProcessedTasks(processTasks(props.tasks))
+    }
+
+    return (
+
+        <div className="w-full h-full flex flex-row overflow-scroll">
+            <div className="w-2/6 pr-6 h-fit bg-white left-0 sticky z-10 border-r-1 shadow-2xl">
+                {processedTasks.map(x => <NameRow key={"name_" + x.id} task={x}></NameRow>)}
+            </div>
+            <div className="w-100 relative h-fit pl-6">
+                <div className="absolute h-full w-full overflow-hidden gridBackground">
+                    <Arrows task={chosenTask}></Arrows>
+                </div>
+                {processedTasks.map((x) => <TaskPillRow chosenTask={chosenTask} setChosenTask={setChosenTask} key={"pill_" + x.id} task={x}></TaskPillRow>)}
+            </div>
+            <ReactTooltip id="test" getContent={(task) => ToolTipContent(JSON.parse(task))} ></ReactTooltip>
+        </div>
+    );
+
+
+
+}
+
+function processTasks(itemsInput: Array<TaskDto>) {
+
+    let itemsRaw: Array<Task> = itemsInput.map(x => { return { ...x, nexts: [], prevs: [], offset: 0 } })
+
+    let starters = itemsRaw.filter(x => x?.predecessors?.length === 0)
     let itemsDict: { [id: number]: Task; } = {};
-    var offsets: { [id: number]: number; } = {};
-    var nexts: { [id: number]: Array<number>; } = {};
-
     //initialize variables
     for (let task of itemsRaw) {
-        itemsDict[task.Id] = task
-        offsets[task.Id] = 0
-        nexts[task.Id] = []
-        task.Duration = 3
+        itemsDict[task.id] = task
+        task.duration = 3
     }
 
     for (let task of itemsRaw) {
-        if (task.Predecessors?.length > 0) {
-            for (let p of task.Predecessors) {
-                nexts[p].push(task.Id);
+        if (task.predecessors?.length > 0) {
+            for (let p of task.predecessors) {
+                let prev = itemsDict[p]
+                prev.nexts.push(task)
+                task.prevs.push(prev)
             }
         }
     }
@@ -42,107 +65,123 @@ export default function Gantt() {
     }
 
     function processNexts(task: Task, offset: number) {
-        for (let i of nexts[task.Id]) {
-            var nextTask = itemsDict[i]
-            offsets[nextTask.Id] = Math.max(offset + task.Duration, offsets[nextTask.Id])
-            processNexts(nextTask, offsets[nextTask.Id])
+        for (let nextTask of task.nexts) {
+            nextTask.offset = Math.max(offset + task.duration, nextTask.offset)
+            processNexts(nextTask, nextTask.offset)
         }
     }
 
-    let items = Object.values(itemsDict)
+    return Object.values(itemsDict)
+}
 
-    return (
+interface RowProps {
+    task: Task,
+    chosenTask?: Task | null,
+    setChosenTask?: (t: Task) => void,
+    children?: React.ReactNode,
+}
+function TaskRow(props: RowProps) {
+    return <div className="flex items-center" style={{ height: "40px" }}>
+        {props.children}
+    </div>
+}
 
-        <div className="w-full h-full flex flex-row overflow-scroll">
-            <div className="w-2/6 pr-6 h-fit bg-white left-0 sticky z-10 border-r-1 shadow-2xl">
-                {items.map(x => <NameRow key={"name_" + x.Id} task={x}></NameRow>)}
-            </div>
-            <div className="w-fit relative h-fit pl-6">
-                <div className="absolute h-full w-full overflow-hidden gridBackground">
-                    <Arrows></Arrows>
-                </div>
-                {items.map((x) => <TaskPillRow key={"pill_" + x.Id} task={x}></TaskPillRow>)}
-            </div>
+function NameRow(props: RowProps) {
+    return <TaskRow task={props.task}>
+        <div className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap h-100" title={props.task?.name}>
+            <span className="font-bold">{props.task?.id}</span>{" " + props.task?.name}
         </div>
-    );
+    </TaskRow>
+}
 
+function TaskPillRow(props: RowProps) {
+    let task = props.task
+    let width = task.duration * baseTaskWidth + "px"
+    let margin = task.offset * baseTaskWidth + "px"
 
-    interface RowProps {
-        task: Task,
-        children?: React.ReactNode
-    }
-    function TaskRow(props: RowProps) {
-        return <div className="flex items-center py-8" style={{ height: "30px" }}>
-            {props.children}
-        </div>
-    }
+    return <TaskRow task={props.task}>
 
-    function NameRow(props: RowProps) {
-        return <TaskRow task={props.task}>
-            <div className="flex-1 border-b-2 pb-5 text-ellipsis overflow-hidden whitespace-nowrap" title={props.task?.Name}>
-                {props.task?.Id + " " + props.task?.Name}
-            </div>
-        </TaskRow>
-    }
+        <div key={task.id} className="relative">
 
-    function TaskPillRow(props: RowProps) {
-        let task = props.task
-        let width = task.Duration * baseTaskWidth + "px"
-        let margin = offsets[task.Id] * baseTaskWidth + "px"
-
-        return <TaskRow task={props.task}>
-
-            <div key={task.Id} className="relative" style={{
-                // backgroundImage: "linear-gradient(rgba(0, 255, 0, .7) .1em, transparent .1em), linear-gradient(90deg, rgba(0, 255, 0, .7) .1em, transparent .1em)"
-            }}>
-
-                <div title={props.task?.Name} className="pill bg-blue-500" id={`box_${task.Id}`} style={{
+            <div data-tip={JSON.stringify({ ...task, prevs: [], nexts: [] })} data-for={`test`}
+                onClick={() => { props.chosenTask == task ? props.setChosenTask!(null!) : props.setChosenTask!(task) }}
+                title={props.task?.name} className={`pill ${props.chosenTask == task ? "bg-blue-500" : "bg-blue-900"}`} id={`box_${task.id}`} style={{
                     marginLeft: margin,
                     width: width,
                     height: "20px"
                 }}>
-                </div>
-
             </div>
-        </TaskRow>
+        </div>
+    </TaskRow>
+}
+
+interface ArrowsProps {
+    task: Task | null
+}
+function Arrows(props: ArrowsProps) {
+    let task = props.task
+    if (task == null) {
+        return <div></div>
     }
 
-    function Arrows() {
-        let arrows: Array<any> = [];
-        function traverseTask(task: Task, arrows: Array<any>) {
-            let colors = ["blue", "blue", "orange"]
-            let curvenes = [1, .6, .3]
+    let arrows: Array<any> = [];
 
-            let it = 0;
-            for (let i of nexts[task.Id]) {
-                var nextTask = itemsDict[i]
-
-                let start = `box_${task.Id}`
-                let end = `box_${i}`
-                arrows.push(<Xarrow
-                    key={i + "_" + task.Id}
-                    start={start}
-                    end={end}
-                    startAnchor="right"
-                    endAnchor="top"
-                    dashness={true}
-                    color={colors[it % nexts[task.Id].length]}
-                    strokeWidth={2}
-                    curveness={curvenes[it % nexts[task.Id].length]}
-                    path="smooth" />);
-
-                it++;
-                traverseTask(nextTask, arrows)
-            }
-        }
-
-        for (let s of starters) {
-            traverseTask(s, arrows)
-        }
-
-        return <div>{arrows}</div>
-
+    for (let next of task.nexts) {
+        let key = `|${task.id}_${next.id}|`
+        arrows.push(<Arrow key={key} startId={task.id} endId={next.id} iterator={0}></Arrow>)
     }
+
+    for (let prev of task.prevs) {
+        let key = `|${prev.id}_${task.id}|`
+        arrows.push(<Arrow key={key} startId={prev.id} endId={task.id} iterator={0}></Arrow>)
+    }
+
+
+    return <div>{arrows}</div>
+}
+
+
+
+
+interface ArrowProps {
+    startId: number
+    endId: number
+    iterator: number
+}
+function Arrow(props: ArrowProps) {
+    const colors = ["blue", "blue", "orange"]
+    const curvenes = [1, .6, .3]
+
+    let start = `box_${props.startId}`
+    let end = `box_${props.endId}`
+
+    return <Xarrow
+        start={start}
+        end={end}
+        startAnchor="right"
+        endAnchor="top"
+        dashness={true}
+        color={"blue"}
+        strokeWidth={2}
+        curveness={1}
+        path="smooth" />
+
+}
+
+function ToolTipContent(task: Task) {
+    if (task == null) {
+        return <div></div>
+    }
+    return <div>
+        <h6>Nazwa</h6>
+        <p>{task.name}</p>
+        <h6>Faza</h6>
+        <p>{task.phase}</p>
+        <h6>Dyscyplina</h6>
+        <p>{task.discipline}</p>
+        <h6>Uzasadnienie</h6>
+        <p>{task.description}</p>
+    </div>
 }
 
 

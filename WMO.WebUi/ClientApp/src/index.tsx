@@ -12,7 +12,6 @@ ReactDOM.render(
   <BrowserRouter>
   <Routes>
     <Route path="/" element={<App />} />
-    <Route path="gantt" element={<Gantt />} />
   </Routes>
   </BrowserRouter>,
   document.getElementById('root')

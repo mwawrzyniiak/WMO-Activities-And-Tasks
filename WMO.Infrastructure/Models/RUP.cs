@@ -52,7 +52,8 @@
                 foreach(var predecessor in predecessorsSplit)
                 {
                     if (predecessor == null || predecessor == "") continue;
-                    Predecessors.Add(int.Parse(predecessor));
+                    if(int.TryParse(predecessor, out int value))
+                        Predecessors.Add(value);
                 }
             }
         }

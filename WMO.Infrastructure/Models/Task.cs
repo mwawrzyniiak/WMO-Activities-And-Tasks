@@ -6,6 +6,8 @@
         public string Name { get; set; }
         public int Duration { get; set; }
         public string Role { get; set; }
+        public string Discipline { get; set; }
+        public string Phase { get; set; }
         public List<int> Predecessors { get; set; }
 
         public string Description { get; set; }

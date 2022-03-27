@@ -28,8 +28,10 @@ namespace WMO.Infrastructure.Services
                     Name = rup.BreakdownElement,
                     Predecessors = rup.Predecessors,
                     Role = "",
-                    Description = rup.Uzasadnienie
-                });
+                    Description = rup.Uzasadnienie,
+                    Discipline = rup.Dyscyplina,
+                    Phase = rup.Phase.ToString()
+                });;
             }
             return schedules;
         }

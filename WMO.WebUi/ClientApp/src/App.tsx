@@ -2,6 +2,8 @@ import axios from 'axios';
 import { useState } from 'react';
 import { Button, Col, Container, Dropdown, Form, Row, Spinner } from 'react-bootstrap';
 import './App.css';
+import Gantt from './components/Gantt/Gantt';
+import { Task } from './components/Gantt/Task';
 
 interface FormState {
   disciplines: number,
@@ -13,6 +15,7 @@ function App() {
 
   const [state, setState] = useState<FormState>({ disciplines: 0, projectSize: 1 });
   const [isSending, setIsSending] = useState(false);
+  const [ganttTasks, setGanttTasks] = useState(new Array<Task>());
 
   function handleDyscyplineChange(event: any) {
     const target = event.target;
@@ -44,8 +47,9 @@ function App() {
   function handleSubmit(event: any) {
     event.preventDefault();
     setIsSending(true)
+    setGanttTasks([])
     axios.post("http://localhost:4000/api/v1/schedule", state)
-      .then(() => setIsSending(false))
+      .then((res) => { setIsSending(false); setGanttTasks(res.data) })
   }
 
   return (
@@ -122,6 +126,14 @@ function App() {
             </Form>
           </Col>
         </Row>
+        {ganttTasks?.length > 1 && !isSending &&
+          <Row>
+            <Col className='h-fit'>
+              <h4 className='my-4'>Harmonogram</h4>
+            <Gantt tasks={ganttTasks}></Gantt>
+            </Col>
+          </Row>
+        }
       </Container>
 
     </div>
