@@ -67,6 +67,7 @@ namespace WMO.Infrastructure.Models
             switch (disipline)
             {
                 case "business modeling":
+                case "business modelling":
                     this.Dyscyplina = DisciplineEnum.BusinessModeling;
                     break;
                 case "requirements":

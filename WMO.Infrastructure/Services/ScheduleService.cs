@@ -33,7 +33,7 @@ namespace WMO.Infrastructure.Services
                     Predecessors = rup.Predecessors,
                     Role = "",
                     Description = rup.Uzasadnienie,
-                    Discipline = rup.Dyscyplina,
+                    Discipline = rup.Dyscyplina.ToString(),
                     Phase = rup.Phase.ToString()
                 });;
             }

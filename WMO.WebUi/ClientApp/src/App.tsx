@@ -59,6 +59,11 @@ function App() {
           <Col>
             <h4 className='my-4'>Proszę wybrać dyscypliny</h4>
             <Form onSubmit={handleSubmit}>
+            <Form.Check
+                label={`Inception`}
+                value={1024}
+                onChange={handleDyscyplineChange}
+              />
               <Form.Check
                 label={`Business Modelling`}
                 value={1}

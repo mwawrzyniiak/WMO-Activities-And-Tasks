@@ -39,7 +39,6 @@ export default function Gantt(props: GantProps) {
 }
 
 function processTasks(itemsInput: Array<TaskDto>) {
-
     let itemsRaw: Array<Task> = itemsInput.map(x => { return { ...x, nexts: [], prevs: [], offset: 0 } })
 
     let starters = itemsRaw.filter(x => x?.predecessors?.length === 0)
@@ -54,8 +53,10 @@ function processTasks(itemsInput: Array<TaskDto>) {
         if (task.predecessors?.length > 0) {
             for (let p of task.predecessors) {
                 let prev = itemsDict[p]
-                prev.nexts.push(task)
-                task.prevs.push(prev)
+                if (prev != null) {
+                    prev.nexts.push(task)
+                    task.prevs.push(prev)
+                }
             }
         }
     }
