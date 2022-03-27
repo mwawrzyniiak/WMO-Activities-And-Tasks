@@ -21,7 +21,7 @@ namespace WMO.Infrastructure.Services
 
             foreach (var rup in rups)
             {
-                if (!(rup.Dyscyplina.HasFlag(projectParameters.Disciplines)) || rup.Kategorie.HasFlag(projectParameters.ProjectSize))
+                if (!(projectParameters.Disciplines.HasFlag(rup.Dyscyplina)) || rup.Kategorie.HasFlag(projectParameters.ProjectSize))//this HasFlag is shit method I hate it it does thing but why the fuck we needed to use this shit instead of something more understandable
                 {
                     continue;
                 }

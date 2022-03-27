@@ -95,7 +95,8 @@ namespace WMO.Infrastructure.Models
                     this.Dyscyplina = DisciplineEnum.Environment;
                     break;
                 default:
-                    throw new ArgumentException();
+                    Console.WriteLine(disipline);
+                    break;
             }
         }
 
