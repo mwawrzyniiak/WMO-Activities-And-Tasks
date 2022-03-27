@@ -21,6 +21,10 @@ namespace WMO.Infrastructure.Services
 
             foreach (var rup in rups)
             {
+                if (!(rup.Dyscyplina.HasFlag(projectParameters.Disciplines)) || rup.Kategorie.HasFlag(projectParameters.ProjectSize))
+                {
+                    continue;
+                }
                 schedules.Add(new Models.Task()
                 {
                     Id = rup.Index,

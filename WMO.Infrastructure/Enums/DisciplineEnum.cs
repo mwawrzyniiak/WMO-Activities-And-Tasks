@@ -8,7 +8,7 @@ namespace WMO.Infrastructure.Enums
 {
     public enum DisciplineEnum
     {
-        Modelling = 1,
+        BusinessModeling = 1,
         Requirements = 2,
         AnalysisAndDesign = 4,
         Implementation = 8,
