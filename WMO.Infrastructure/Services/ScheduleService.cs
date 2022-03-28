@@ -15,7 +15,6 @@ namespace WMO.Infrastructure.Services
         public List<Models.Task> PrepareSchedule(ProjectParameters projectParameters)
         {
             List<Models.Task> schedules = new List<Models.Task>();
-            schedules.Add(new Models.Task() { Id = 5 });
 
             var rups = RUPReaderService.Read(Dictionary.CSV_PATH);
 
