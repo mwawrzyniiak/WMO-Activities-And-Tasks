@@ -4,31 +4,41 @@ import Xarrow from "react-xarrows";
 import { Task, TaskDto } from "./Task";
 
 const baseTaskWidth = 50
-
 interface GantProps {
     tasks: TaskDto[]
 }
 
+interface Depth {
+    [phase: string]: number;
+}
+
 export default function Gantt(props: GantProps) {
     const [processedTasks, setProcessedTasks] = useState<Array<Task>>([]);
-
     const [chosenTask, setChosenTask] = useState<Task | null>(null)
+    const [depths, setDepths] = useState<Depth>({})
 
     if (processedTasks.length == 0) {
-        setProcessedTasks(processTasks(props.tasks))
+        setProcessedTasks(processTasks(props.tasks, depths, setDepths))
     }
 
     return (
 
         <div className="w-full h-full flex flex-row overflow-scroll">
-            <div className="w-2/6 pr-6 h-fit bg-white left-0 sticky z-10 border-r-1 shadow-2xl">
+            <div className="w-2/6 pr-6 h-fit bg-white left-0 sticky z-50 border-r-1 shadow-2xl pt-6">
                 {processedTasks.map(x => <NameRow key={"name_" + x.id} task={x}></NameRow>)}
             </div>
-            <div className="w-100 relative h-fit pl-6">
-                <div className="absolute h-full w-full overflow-hidden gridBackground">
+            <div className="w-100 relative h-fit pl-6 pt-6">
+                {processedTasks.map((x) => <TaskPillRow chosenTask={chosenTask} setChosenTask={setChosenTask} key={"pill_" + x.id} task={x}></TaskPillRow>)}
+
+                <div className="absolute top-6 h-full w-full overflow-hidden gridBackground" style={{ zIndex: 2 }}>
                     <Arrows task={chosenTask}></Arrows>
                 </div>
-                {processedTasks.map((x) => <TaskPillRow chosenTask={chosenTask} setChosenTask={setChosenTask} key={"pill_" + x.id} task={x}></TaskPillRow>)}
+                <div className="absolute top-0 left-0 h-100 pl-6 d-flex text-center" style={{ zIndex: -1 }}>
+                    <h6 style={{ width: depths["Inception"] * baseTaskWidth + "px" }} className="pt-1">Inception</h6>
+                    <h6 style={{ width: depths["Elaboration"] * baseTaskWidth + "px" }} className="bg-blue-100 pt-1">Elaboration</h6>
+                    <h6 style={{ width: depths["Construction"] * baseTaskWidth + "px" }} className="pt-1">Construction</h6>
+                    <h6 style={{ width: depths["Transition"] * baseTaskWidth + "px" }} className="bg-blue-100 pt-1">Transition</h6>
+                </div>
             </div>
             <ReactTooltip id="test" getContent={(task) => ToolTipContent(JSON.parse(task))} ></ReactTooltip>
         </div>
@@ -38,15 +48,14 @@ export default function Gantt(props: GantProps) {
 
 }
 
-function processTasks(itemsInput: Array<TaskDto>) {
+function processTasks(itemsInput: Array<TaskDto>, depths: any, setDepths: any) {
     let itemsRaw: Array<Task> = itemsInput.map(x => { return { ...x, nexts: [], prevs: [], offset: 0 } })
 
-    let starters = itemsRaw.filter(x => x?.predecessors?.length === 0)
     let itemsDict: { [id: number]: Task; } = {};
     //initialize variables
     for (let task of itemsRaw) {
         itemsDict[task.id] = task
-        task.duration = 3
+        task.duration = 1
     }
 
     for (let task of itemsRaw) {
@@ -61,18 +70,53 @@ function processTasks(itemsInput: Array<TaskDto>) {
         }
     }
 
+    let starters = itemsRaw.filter(x => x?.prevs?.length === 0)
+    let tempDepths: any = {...depths}
     for (let s of starters) {
-        processNexts(s, 0)
+        tempDepths[s.phase] = tempDepths[s.phase] ?? 0;
+        s.offset = getOffset(s)
+        tempDepths[s.phase] = Math.max(processNexts(s), tempDepths[s.phase])
     }
 
-    function processNexts(task: Task, offset: number) {
+    setDepths(tempDepths)
+
+    function processNexts(task: Task) {
+        let maxDepth = 1;
         for (let nextTask of task.nexts) {
-            nextTask.offset = Math.max(offset + task.duration, nextTask.offset)
-            processNexts(nextTask, nextTask.offset)
+            nextTask.offset = Math.max(task.offset + task.duration, nextTask.offset)
+            maxDepth = Math.max(maxDepth, processNexts(nextTask) + 1)
+        }
+        return maxDepth;
+    }
+
+    function getOffset(task: Task){
+        switch (task.phase) {
+            case "Inception":
+                return 0
+            case "Elaboration":
+                return tempDepths["Inception"]
+            case "Construction":
+                return tempDepths["Elaboration"] + tempDepths["Inception"]
+            case "Transition":
+                return tempDepths["Construction"] + tempDepths["Elaboration"] + tempDepths["Inception"]
         }
     }
 
     return Object.values(itemsDict)
+}
+
+
+function getPillColor(task: Task) {
+    switch (task.phase) {
+        case "Inception":
+            return "orange"
+        case "Elaboration":
+            return "green"
+        case "Construction":
+            return "black"
+        case "Transition":
+            return "red"
+    }
 }
 
 interface RowProps {
@@ -102,14 +146,15 @@ function TaskPillRow(props: RowProps) {
 
     return <TaskRow task={props.task}>
 
-        <div key={task.id} className="relative">
+        <div key={task.id} className="relative" style={{ zIndex: 20 }}>
 
             <div data-tip={JSON.stringify({ ...task, prevs: [], nexts: [] })} data-for={`test`}
                 onClick={() => { props.chosenTask == task ? props.setChosenTask!(null!) : props.setChosenTask!(task) }}
-                title={props.task?.name} className={`pill ${props.chosenTask == task ? "bg-blue-500" : "bg-blue-900"}`} id={`box_${task.id}`} style={{
+                title={props.task?.name} className={`pill ${props.chosenTask == task ? "bg-blue-500" : ""}`} id={`box_${task.id}`} style={{
                     marginLeft: margin,
                     width: width,
-                    height: "20px"
+                    height: "20px",
+                    backgroundColor: getPillColor(task)
                 }}>
             </div>
         </div>
@@ -182,6 +227,15 @@ function ToolTipContent(task: Task) {
         <p>{task.discipline}</p>
         <h6>Uzasadnienie</h6>
         <p>{task.description}</p>
+        <h6>Poprzednicy</h6>
+        <ul>
+            {task.prevs.map(x => <li>{x.name}</li>)}
+        </ul>
+        {task.predecessors.map(x => x + "___")}
+        <h6>
+            Offset
+        </h6>
+        {task.offset}
     </div>
 }
 

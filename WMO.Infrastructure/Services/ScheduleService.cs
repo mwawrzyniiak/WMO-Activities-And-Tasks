@@ -20,10 +20,11 @@ namespace WMO.Infrastructure.Services
 
             foreach (var rup in rups)
             {
-                if (!(projectParameters.Disciplines.HasFlag(rup.Dyscyplina)) || rup.Kategorie.HasFlag(projectParameters.ProjectSize))//this HasFlag is shit method I hate it it does thing but why the fuck we needed to use this shit instead of something more understandable
-                {
-                    continue;
-                }
+                if (projectParameters.ProjectSize != CategoryEnum.Sun)
+                    if (!(projectParameters.Disciplines.HasFlag(rup.Dyscyplina)) || rup.Kategorie.HasFlag(projectParameters.ProjectSize))//this HasFlag is shit method I hate it it does thing but why the fuck we needed to use this shit instead of something more understandable
+                    {
+                        continue;
+                    }
                 schedules.Add(new Models.Task()
                 {
                     Id = rup.Index,
@@ -34,7 +35,7 @@ namespace WMO.Infrastructure.Services
                     Description = rup.Uzasadnienie,
                     Discipline = rup.Dyscyplina.ToString(),
                     Phase = rup.Phase.ToString()
-                });;
+                }); ;
             }
             return schedules;
         }

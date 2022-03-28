@@ -13,7 +13,7 @@ namespace WMO.Infrastructure.Models
         public string Przydział { get; set; }
         public DisciplineEnum Dyscyplina { get; set; }
         public string ZakresWdrażania { get; set; }
-        public CategoryEnum Kategorie { get; set; }
+        public CategoryEnum Kategorie { get; set; } = CategoryEnum.Sun;
         public string Uzasadnienie { get; set; }
 
         public RUP(string[] args)
@@ -46,6 +46,8 @@ namespace WMO.Infrastructure.Models
             {
                 Kategorie |= category;
             }
+
+            Kategorie |= CategoryEnum.Sun;
 
             this.Uzasadnienie = args[13];
 

@@ -59,11 +59,6 @@ function App() {
           <Col>
             <h4 className='my-4'>Proszę wybrać dyscypliny</h4>
             <Form onSubmit={handleSubmit}>
-            <Form.Check
-                label={`Inception`}
-                value={1024}
-                onChange={handleDyscyplineChange}
-              />
               <Form.Check
                 label={`Business Modelling`}
                 value={1}
@@ -115,6 +110,7 @@ function App() {
                 <option value="2">Pluton</option>
                 <option value="4">Mars</option>
                 <option value="8">Jowisz</option>
+                <option value="16">Słońce</option>
               </Form.Select>
               <Button type="submit" disabled={isSending}>
                 {isSending ?
@@ -135,6 +131,8 @@ function App() {
           <Row>
             <Col className='h-fit'>
               <h4 className='my-4'>Harmonogram</h4>
+              <p className='italic'>Aby zobaczyć pozostałe fazy, można przesuwać harmonogram strzałkami w prawo i w lewo</p>
+              <p className='italic'>Po kliknięciu w kapsułkę zadania na harmonogramie pojawi się wizualizacja zależności.</p>
             <Gantt tasks={ganttTasks}></Gantt>
             </Col>
           </Row>
