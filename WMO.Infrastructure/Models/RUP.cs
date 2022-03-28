@@ -21,8 +21,8 @@ namespace WMO.Infrastructure.Models
             if (args == null)
                 throw new ArgumentNullException();
 
-            int phase, type, index;
-            phase = SetPhase(args);
+            int type, index;
+            var phase = SetPhase(args);
 
             this.BreakdownElement = args[1];
 
@@ -109,12 +109,11 @@ namespace WMO.Infrastructure.Models
             return type;
         }
 
-        private int SetPhase(string[] args)
+        private PhaseEnum SetPhase(string[] args)
         {
-            int phase;
-            if (int.TryParse(args[0], out phase))
-                this.Phase = (PhaseEnum)phase;
-
+            string phaseName = args[0];
+            if (Enum.TryParse(phaseName, out PhaseEnum phase))
+                this.Phase = phase;
             return phase;
         }
     }
