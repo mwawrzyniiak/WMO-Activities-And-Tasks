@@ -3,5 +3,5 @@
     Inception,
     Elaboration,
     Construction,
-    Transistion,
+    Transition,
 }
